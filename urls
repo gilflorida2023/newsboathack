@@ -1,0 +1,485 @@
+# query feeds
+"query:unread_items:unread = \"yes\""
+"query:pam_bondi:unread = \"yes\" and title =~ \"bondi\" and title =~ \"pam\""
+"query:john_bolton:unread = \"yes\" and title =~ \"bolton\" and title =~ \"john\""
+"query:hurricane:unread = \"yes\" and title =~ \"hurricane\""
+"query:ukraine:unread = \"yes\" and title =~ \"ukraine\""
+"query:zuckerburg:unread = \"yes\" and title =~ \"zuckerburg\""
+"query:alkatraz:unread = \"yes\" and title =~ \"alkatraz\""
+"query:israel:unread = \"yes\" and title =~ \"israel\""
+"query:israel_airline:unread = \"yes\" and title =~ \"airline\" and title =~ \"israel\""
+"query:israel_yemen:unread = \"yes\" and title =~ \"yemen\" and title =~ \"israel\""
+"query:wef:unread = \"yes\" and title =~ \"wef\""
+"query:alaska:unread = \"yes\" and title =~ \"alaska\""
+"query:adam_schiff:unread = \"yes\" and title =~ \"adam\" and title =~ \"schiff\""
+"query:andrew_bailey:unread = \"yes\" and title =~ \"andrew\" and title =~ \"bailey\""
+"query:australia:unread = \"yes\" and title =~ \"australia\""
+"query:sam_altman:unread = \"yes\" and title =~ \"sam\" and title =~ \"altman\""
+"query:bernie_sanders:unread = \"yes\" and title =~ \"bernie\" and title =~ \"sanders\""
+"query:bill_clinton:unread = \"yes\" and title =~ \"bill\" and title =~ \"clinton\""
+"query:hillary_clinton:unread = \"yes\" and title =~ \"hillary\" and title =~ \"clinton\""
+"query:bitcoin:unread = \"yes\" and title =~ \"bitcoin\""
+"query:biden:unread = \"yes\" and title =~ \"biden\""
+"query:blackrock:unread = \"yes\" and title =~ \"blackrock\""
+"query:bryan_steil:unread = \"yes\" and title =~ \"bryan\" and title =~ \"steil\""
+"query:chuck_schumer:unread = \"yes\" and title =~ \"chuck\" and title =~ \"schumer\""
+"query:cartoon:unread = \"yes\" and title =~ \"cartoon\""
+"query:cdc:unread = \"yes\" and title =~ \"cdc\""
+"query:dan_bongino:unread = \"yes\" and title =~ \"dan\" and title =~ \"bongino\""
+"query:desantis:unread = \"yes\" and title =~ \"desantis\""
+"query:donald_trump:unread = \"yes\" and title =~ \"donald\" and title =~ \"trump\""
+"query:elon_musk:unread = \"yes\" and title =~ \"elon\" and title =~ \"musk\""
+"query:epstein:unread = \"yes\" and title =~ \"epstein\""
+"query:fauci:unread = \"yes\" and title =~ \"fauci\""
+"query:federal_takeover:unread = \"yes\" and title =~ \"federal\" and title =~ \"takeover\""
+"query:fukoshima:unread = \"yes\" and title =~ \"fukoshima\""
+"query:gaza:unread = \"yes\" and title =~ \"gaza\""
+"query:gavin_newsome:unread = \"yes\" and title =~ \"gavin\" and title =~ \"newsome\""
+"query:ghislaine_maxwell:unread = \"yes\" and title =~ \"ghislaine\" and title =~ \"maxwell\""
+"query:genocide:unread = \"yes\" and title =~ \"genocide\""
+"query:golden_dome:unread = \"yes\" and title =~ \"golden\" and title =~ \"dome\""
+"query:gold_spot:unread = \"yes\" and title =~ \"gold\" and title =~ \"spot\""
+"query:ireland:unread = \"yes\" and title =~ \"ireland\""
+"query:laura_loomer:unread = \"yes\" and title =~ \"laura\" and title =~ \"loomer\""
+"query:matt_gaetz:unread = \"yes\" and title =~ \"matt\" and title =~ \"gaetz\""
+"query:mtg:unread = \"yes\" and title =~ \"mtg\""
+"query:nvidia:unread = \"yes\" and title =~ \"nvidia\""
+"query:thomas_massie:unread = \"yes\" and title =~ \"thomas\" and title =~ \"massie\""
+"query:james_comey:unread = \"yes\" and title =~ \"james\" and title =~ \"comey\""
+"query:jasmine_crockett:unread = \"yes\" and title =~ \"jasmine\" and title =~ \"crockett\""
+"query:jd_vance:unread = \"yes\" and title =~ \"jd\" and title =~ \"vance\""
+"query:kash_patel:unread = \"yes\" and title =~ \"kash\" and title =~ \"patel\""
+"query:larry_fink:unread = \"yes\" and title =~ \"larry\" and title =~ \"fink\""
+"query:lindsey_graham:unread = \"yes\" and title =~ \"lindsey\" and title =~ \"graham\""
+"query:bill_gates:unread = \"yes\" and title =~ \"bill\" and title =~ \"gates\""
+"query:marco_rubio:unread = \"yes\" and title =~ \"marco\" and title =~ \"rubio\""
+"query:marijuana:unread = \"yes\" and title =~ \"marijuana\""
+"query:nancy_pelosi:unread = \"yes\" and title =~ \"nancy\" and title =~ \"pelosi\""
+"query:netanyahu:unread = \"yes\" and title =~ \"netanyahu\""
+"query:palestine:unread = \"yes\" and title =~ \"palestine\""
+"query:nick_fuentes:unread = \"yes\" and title =~ \"nick\" and title =~ \"fuentes\""
+"query:michael_saylor:unread = \"yes\" and title =~ \"michael\" and title =~ \"saylor\""
+"query:jerome_powell:unread = \"yes\" and title =~ \"jerome\" and title =~ \"powell\""
+"query:scotland:unread = \"yes\" and title =~ \"scotland\""
+"query:rfk:unread = \"yes\" and title =~ \"rfk\""
+"query:starve:unread = \"yes\" and ( title =~ \"starv\" or title =~ \"famine\")"
+
+
+http://betakit.com/feed/    !
+http://cogconnected.com/feed/    !
+http://dailycaller.com/section/politics/feed/    !
+http://feeds2.feedburner.com/bit-tech/all    !
+http://feeds2.feedburner.com/time/scienceandhealth    !
+http://feeds.abcnews.com/abcnews/entertainmentheadlines    !
+http://feeds.abcnews.com/abcnews/healthheadlines    !
+http://feeds.abcnews.com/abcnews/technologyheadlines    !
+http://feeds.abcnews.com/abcnews/usheadlines    !
+http://feeds.bbci.co.uk/news/business/rss.xml    !
+http://feeds.bbci.co.uk/news/england/rss.xml    !
+http://feeds.bbci.co.uk/news/entertainment_and_arts/rss.xml    !
+http://feeds.bbci.co.uk/news/health/rss.xml    !
+http://feeds.bbci.co.uk/news/health/rss.xml?edition=us    !
+http://feeds.bbci.co.uk/news/northern_ireland/rss.xml    !
+http://feeds.bbci.co.uk/news/politics/rss.xml    !
+http://feeds.bbci.co.uk/news/rss.xml    !
+http://feeds.bbci.co.uk/news/science_and_environment/rss.xml    !
+http://feeds.bbci.co.uk/news/scotland/rss.xml    !
+http://feeds.bbci.co.uk/news/technology/rss.xml    !
+http://feeds.bbci.co.uk/news/uk/rss.xml    !
+http://feeds.bbci.co.uk/news/wales/rss.xml    !
+http://feeds.bbci.co.uk/news/world/asia/india/rss.xml    !
+http://feeds.bbci.co.uk/news/world/asia/rss.xml    !
+http://feeds.bbci.co.uk/news/world/rss.xml    !
+http://feeds.bbci.co.uk/news/world/us_and_canada/rss.xml    !
+http://feeds.examiner.ie/ietopstories    !
+http://feeds.harvardbusiness.org/harvardbusiness?format=xml    !
+http://feeds.howtogeek.com/howtogeek    !
+http://feeds.ign.com/ign/all    !
+http://feeds.lexblog.com/foodsafetynews/mRcs    !
+http://feeds.nature.com/nbt/rss/current    !
+http://feeds.nbcnews.com/feeds/health    !
+http://feeds.nbcnews.com/feeds/todayentertainment    !
+http://feeds.nbcnews.com/feeds/topstories    !
+http://feeds.nbcnews.com/feeds/worldnews    !
+http://feeds.sbnation.com/rss/streams    !
+http://feeds.skynews.com/feeds/rss/entertainment.xml    !
+http://feeds.skynews.com/feeds/rss/technology.xml    !
+http://feeds.theguardian.com/theguardian/politics/rss    !
+http://feeds.theguardian.com/theguardian/science/rss    !
+http://feeds.theguardian.com/theguardian/technology/rss    !
+http://feeds.theguardian.com/theguardian/uk/business/rss    !
+http://feeds.webservice.techradar.com/rss/new    !
+http://feeds.webservice.techradar.com/us/rss/new    !
+http://feeds.webservice.techradar.com/us/rss/news/gaming    !
+http://gigaom.com/feed/    !
+http://globalnews.ca/canada/feed/    !
+http://globalnews.ca/category/entertainment/feed/    !
+http://globalnews.ca/politics/feed/    !
+http://globalnews.ca/science/feed/    !
+http://globalnews.ca/tech/feed/    !
+http://indianexpress.com/entertainment/feed/    !
+http://indianexpress.com/section/india/feed/    !
+http://indianexpress.com/section/technology/feed/    !
+http://indianexpress.com/technology/feed/    !
+http://khn.org/feed/    !
+http://leaderpost.com/feed/    !
+http://ottawacitizen.com/feed    !
+http://recode.net/rss/index.xml    !
+http://rss.csmonitor.com/feeds/science    !
+http://rss.csmonitor.com/feeds/usa    !
+http://rss.sciam.com/ScientificAmerican-Global    !
+http://rss.sciam.com/ScientificAmerican-News    !
+https://api.quantamagazine.org/feed/    !
+https://business.inquirer.net/feed    !
+https://cointelegraph.com/rss    !
+https://cointelegraph.com/rss/tag/altcoin    !
+https://cointelegraph.com/rss/tag/bitcoin    !
+https://cointelegraph.com/rss/tag/blockchain    !
+https://cointelegraph.com/rss/tag/defi    !
+https://cointelegraph.com/rss/tag/ethereum    !
+https://cointelegraph.com/rss/tag/markets    !
+https://cointelegraph.com/rss/tag/nft    !
+https://cointelegraph.com/rss/tag/regulation    !
+https://dailycaller.com/feed/    !
+https://en.antaranews.com/rss/news.xml    !
+https://european-union.europa.eu/node/484/rss_en    !
+https://feeds.bbci.co.uk/news/rss.xml?edition=int    !
+https://feeds.simplecast.com/54nAGcIl    !
+https://frontline.thehindu.com/feeder/default.rss    !
+https://hnrss.org/frontpage    !
+https://kcnawatch.org/feed/    !
+https://markets.businessinsider.com/rss/news    !
+https://poorlydrawnlines.com/feed/    !
+https://techcrunch.com/feed/    !
+https://www.aljazeera.com/xml/rss/all.xml    !
+https://www.amnesty.org/en/feed/    !
+https://www.apple.com/newsroom/rss-feed.rss    !
+https://www.breitbart.com/feed/    !
+https://www.breitbart.com/big-government/feed/    !
+https://www.breitbart.com/news/feed/    !
+https://www.breitbart.com/politics/feed/    !
+https://www.breitbart.com/clips/feed/    !
+https://www.breitbart.com/big-journalism/feed/    !
+https://www.breitbart.com/big-hollywood/feed/    !
+https://www.breitbart.com/tech/feed/    !
+https://www.breitbart.com/entertainment/feed/    !
+https://www.breitbart.com/economy/feed/    !
+https://www.breitbart.com/europe/feed/    !
+https://www.breitbart.com/london/feed/    !
+https://www.breitbart.com/middle-east/feed/    !
+https://www.channelnewsasia.com/rssfeeds/8395986    !
+https://www.chicagotribune.com/feed/    !
+https://www.federalreserve.gov/feeds/press_all.xml    !
+https://www.forbesindia.com/feeds/rss-feeds_article.xml    !
+https://www.hollywood.com/feed    !
+https://www.independent.co.uk/news/people/diary/rss    !
+https://www.japantimes.co.jp/feed/    !
+https://www.nknews.org/feed/    !
+https://www.oann.com/category/business/feed/    !
+https://www.oann.com/category/entertainment/feed/    !
+https://www.oann.com/category/politics/feed/    !
+https://www.oann.com/category/world/feed/    !
+https://www.oann.com/feed/    !
+https://www.oann.com/shows/therealstory/feed/    !
+https://www.rappler.com/feed/    !
+https://www.rt.com/rss/business/    !
+https://www.rt.com/rss/news/    !
+https://www.rt.com/rss/politics/    !
+https://www.sciencenews.org/feed    !
+https://www.scmp.com/rss/91/feed    !
+https://www.smbc-comics.com/comic/rss    !
+https://www.techradar.com/feeds.xml    !
+https://www.theguardian.com/world/iran/rss    !
+https://www.theguardian.com/world/rss    !
+https://www.thehindubusinessline.com/news/world/feeder/default.rss    !
+https://www.theverge.com/rss/index.xml    !
+https://www.tntmagazine.com/feed/    !
+https://www.usmagazine.com/feed/    !
+https://www.washingtonexaminer.com/feed/    !
+https://www.youtube.com/feeds/videos.xml?channel_id=UCJx5KP-pCUmL9eZUv-mIcNw    !
+https://xkcd.com/rss.xml    !
+http://syndication.howstuffworks.com/rss/science    !
+http://thecaucus.blogs.nytimes.com/feed/    !
+http://thestarphoenix.com/feed/    !
+http://thewalrus.ca/feed/    !
+http://twitchy.com/category/us-politics/feed/    !
+http://variety.com/feed/    !
+http://windsorstar.com/feed/    !
+http://www.abc.net.au/news/feed/1534/rss.xml    !
+http://www.abc.net.au/news/feed/46182/rss.xml    !
+http://www.abc.net.au/news/feed/51892/rss.xml    !
+http://www.bollywoodhungama.com/rss/news.xml    !
+http://www.bollywoodnewsworld.com/feed    !
+http://www.brandonsun.com/rss/?path=%2Fnational%2Fbreaking-news    !
+http://www.buzzfeed.com/health.xml    !
+http://www.buzzfeed.com/politics.xml    !
+http://www.buzzfeed.com/tech.xml    !
+http://www.buzzfeed.com/tvandmovies.xml    !
+http://www.candis.co.uk/feed/    !
+http://www.chartattack.com/feed/    !
+http://www.cnet.com/rss/android-update/    !
+http://www.cnet.com/rss/gaming/    !
+http://www.cnet.com/rss/iphone-update/    !
+http://www.cnet.com/rss/news/    !
+http://www.computerweekly.com/rss/All-Computer-Weekly-content.xml    !
+http://www.cpsc.gov/en/Newsroom/CPSC-RSS-Feed/Recalls-RSS/    !
+http://www.crikey.com.au/politics/feed    !
+http://www.cvawards.ca/feed/    !
+http://www.dailyrecord.co.uk/lifestyle/health-fitness/rss.xml    !
+http://www.destructoid.com/?mode=atom    !
+http://www.dnaindia.com/feeds/entertainment.xml    !
+http://www.dnaindia.com/feeds/scitech.xml    !
+http://www.dnaindia.com/rss.xml    !
+http://www.dose.ca/feed    !
+http://www.dynamicbusiness.com.au/feed    !
+http://www.economist.com/blogs/blighty/index.xml    !
+http://www.esquire.com/blogs/culture/culture-rss    !
+http://www.express.co.uk/posts/rss/11/health    !
+http://www.express.co.uk/posts/rss/79/showbiznews    !
+http://www.femina.in/feeds/feeds-fitness.xml    !
+http://www.femina.in/feeds/feeds-lifestyle.xml    !
+http://www.film-news.co.uk/rss/UK/news    !
+http://www.forbes.com/technology/feed/    !
+http://www.giantbomb.com/feeds/mashup/    !
+http://www.hellomagazine.com/rss.xml    !
+http://www.hilltimes.com/feed    !
+http://www.hollywoodreporter.com/blogs/live-feed/rss    !
+http://www.ibtimes.co.uk/rss/science    !
+http://www.ibtimes.co.uk/rss/uk    !
+http://www.independent.co.uk/arts-entertainment/tv/rss    !
+http://www.independent.co.uk/life-style/health-and-families/health-news/rss    !
+http://www.independent.co.uk/news/science/rss    !
+http://www.indodaily.com/indodaily.xml    !
+http://www.koreaherald.com/rss/BUSINESS    !
+http://www.laineygossip.com/Rss    !
+http://www.livescience.com/home/feed/site.xml    !
+http://www.macworld.com/index.rss    !
+http://www.manchestereveningnews.co.uk/business/rss.xml    !
+http://www.manchestereveningnews.co.uk/news/showbiz-news/rss.xml    !
+http://www.manchestereveningnews.co.uk/rss.xml    !
+http://www.medscape.com/cx/rssfeeds/2700.xml    !
+http://www.menshealth.com/events-promotions/washpofeed    !
+http://www.mirror.co.uk/news/technology-science/rss.xml    !
+http://www.mirror.co.uk/tv/tv-news/rss.xml    !
+http://www.newsweek.com/rss    !
+http://www.ok.co.uk/rss/health    !
+http://www.oxfordmail.co.uk/news/rss/    !
+http://www.pnas.org/rss/Feature_Article.xml    !
+http://www.polygon.com/rss/index.xml    !
+http://www.rba.gov.au/rss/rss-cb-media-releases.xml    !
+http://www.redstate.com/feed/    !
+http://www.sciencemag.org/rss/current.xml    !
+http://www.sikhsiyasat.com/feed/    !
+http://www.smithsonianmag.com/rss/science-nature/    !
+http://www.standard.co.uk/lifestyle/rss    !
+http://www.standard.co.uk/news/politics/rss    !
+http://www.standard.co.uk/news/rss    !
+http://www.standard.co.uk/showbiz/rss    !
+http://www.starobserver.com.au/category/features/healthy-living/feed    !
+http://www.techinsider.io/rss    !
+http://www.technologyreview.com/stream/rss/    !
+http://www.techspot.com/backend.xml    !
+http://www.theage.com.au/rssheadlines/technology-news/article/rss.xml    !
+https://www.theguardian.com/artanddesign/rss    !
+https://www.theguardian.com/australia-news/rss    !
+https://www.theguardian.com/books/rss    !
+https://www.theguardian.com/business/economics/rss    !
+https://www.theguardian.com/business/stock-markets/rss    !
+https://www.theguardian.com/environment/climate-crisis/rss    !
+https://www.theguardian.com/fashion/rss    !
+https://www.theguardian.com/food/rss    !
+https://www.theguardian.com/football/premierleague/rss    !
+https://www.theguardian.com/football/rss    !
+https://www.theguardian.com/international/rss    !
+https://www.theguardian.com/mostviewed/rss    !
+https://www.theguardian.com/politics/rss    !
+https://www.theguardian.com/science/rss    !
+https://www.theguardian.com/tv-and-radio/rss    !
+https://www.theguardian.com/uk/business/rss    !
+https://www.theguardian.com/uk/commentisfree/rss    !
+https://www.theguardian.com/uk/culture/rss    !
+https://www.theguardian.com/uk/environment/rss    !
+https://www.theguardian.com/uk/film/rss    !
+https://www.theguardian.com/uk-news/rss    !
+https://www.theguardian.com/uk/rss    !
+https://www.theguardian.com/uk/technology/rss    !
+https://www.theguardian.com/us/commentisfree/rss    !
+https://www.theguardian.com/us-news/rss    !
+https://www.theguardian.com/us-news/us-politics/rss    !
+https://www.theguardian.com/world/africa/rss    !
+https://www.theguardian.com/world/americas/rss    !
+https://www.theguardian.com/world/asia/rss    !
+https://www.theguardian.com/world/europe-news/rss    !
+https://www.theguardian.com/world/middleeast/rss    !
+https://www.theguardian.com/world/rss    !
+http://www.theguardian.com/au/rss    !
+http://www.theguardian.com/fashion/rss    !
+http://www.theguardian.com/lifeandstyle/health-and-wellbeing/rss    !
+http://www.theguardian.com/observer/rss    !
+http://www.theguardian.com/science/rss    !
+http://www.theguardian.com/society/health/rss    !
+http://www.theguardian.com/travel/rss    !
+http://www.theguardian.com/tv-and-radio/entertainment/rss    !
+http://www.theguardian.com/uk/environment/rss    !
+http://www.theguardian.com/uk/rss    !
+http://www.theguardian.com/us/environment/rss    !
+http://www.theguardian.com/us/film/rss    !
+http://www.theguardian.com/us/lifeandstyle/rss    !
+http://www.theguardian.com/world/australian-politics/rss    !
+http://www.theguardian.com/world/rss    !
+http://www.theguardian.com/world/usa/rss    !
+http://www.thehindubusinessline.com/news/?service=rss    !
+http://www.thehindu.com/entertainment/?service=rss    !
+http://www.thehindu.com/news/cities/?service=rss    !
+http://www.thehindu.com/news/international/south-asia/?service=rss    !
+http://www.thehindu.com/news/national/?service=rss    !
+http://www.thehindu.com/sci-tech/health/?service=rss    !
+http://www.thehindu.com/sci-tech/science/?service=rss    !
+http://www.thehindu.com/sci-tech/?service=rss    !
+http://www.thehindu.com/sci-tech/technology/?service=rss    !
+http://www.theregister.co.uk/science/headlines.atom    !
+http://www.theverge.com/rss/group/features/index.xml    !
+http://www.theweek.co.uk/feeds/all    !
+https://www.tmz.com/rss.xml    !
+https://www.tmz.com/category/tmz-tv/feed/    !
+http://www.uncut.co.uk/feed    !
+http://www.viralnova.com/feed    !
+http://www.watoday.com.au/rssheadlines/technology-news/article/rss.xml    !
+https://www.yahoo.com/news/rss    !
+https://www.yahoo.com/entertainment/rss    !
+https://www.whitehouse.gov/fact-sheets/feed/    !
+https://www.wired.com/feed/rss    !
+https://www.wired.com/feed/category/science/latest/rss    !
+https://www.wired.com/feed/category/security/latest/rss    !
+https://www.wired.com/feed/category/business/latest/rss    !
+https://www.wired.com/feed/category/backchannel/latest/rss    !
+https://www.wired.com/feed/category/ideas/latest/rss    !
+https://www.wired.com/feed/category/gear/latest/rss    !
+https://www.wired.com/feed/category/transportation/latest/rss    !
+http://www.xinhuanet.com/english/rss/worldrss.xml    !
+http://zeenews.india.com/rss/india-national-news.xml    !
+http://zeenews.india.com/rss/science-technology-news.xml    !
+http://zeenews.india.com/rss/world-news.xml    !
+http://feeds.feedburner.com/AtlanticNational    !
+http://feeds.feedburner.com/BreakingScienceNews?format=xml    !
+http://feeds.feedburner.com/daily-express-finance-news    !
+http://feeds.feedburner.com/daily-express-uk-news    !
+http://feeds.feedburner.com/dailytelegraphnationalnewsndm?format=xml    !
+http://feeds.feedburner.com/DiscoverTopStories    !
+http://feeds.feedburner.com/EtsBreakingNews    !
+http://feeds.feedburner.com/ExclaimCaAllArticles    !
+http://feeds.feedburner.com/Explosm    !
+http://feeds.feedburner.com/factmag    !
+http://feeds.feedburner.com/morningstar/glkd    !
+http://feeds.feedburner.com/motherjones/Politics    !
+http://feeds.feedburner.com/Rpgcast    !
+http://feeds.feedburner.com/ScottishNewsHeraldScotland    !
+http://feeds.feedburner.com/TechCrunch/    !
+http://feeds.feedburner.com/TheAtlanticWire    !
+http://feeds.feedburner.com/TheAustralianBusAviation?format=xml    !
+http://feeds.feedburner.com/TheAustralianBusinessWorldBusNews?format=xml    !
+http://feeds.feedburner.com/TheAustralianBusNews?format=xml    !
+http://feeds.feedburner.com/TheAustralianMediaNews    !
+http://feeds.feedburner.com/TheAustralianTheNationNews    !
+http://feeds.feedburner.com/the-edge-susu    !
+http://feeds.feedburner.com/uk/gizmodo    !
+http://feeds.feedburner.com/VGChartz    !
+https://english.pnn.ps/feed    !
+https://www.al-monitor.com/rss      !
+https://middleeastmnt.disqus.com/latest.rss      !
+https://www.aljazeera.com/xml/rss/all.xml      !
+https://www.meed.com/classifications/analysis/feed    !
+https://feeds.bbci.co.uk/news/world/europe/rss.xml      !
+https://timesofindia.indiatimes.com/rssfeeds/1221656.cms      !
+https://www.japantimes.co.jp/feed/      !
+https://www.unescap.org/rss.xml      !
+https://press.un.org/en/rss.xml      !
+https://www.timesofisrael.com/feed/    !
+https://blogs.timesofisrael.com/feed/    !
+https://www.thedailybeast.com/arc/outboundfeeds/rss/articles/    !
+https://coincentral.com/news/feed/    !
+https://cointelegraph.com/rss    !
+https://bitcoinist.com/feed    !
+https://newsbtc.com/feed    !
+https://cryptopotato.com/feed    !
+https://99bitcoins.com/feed    !
+https://cryptobriefing.com/feed    !
+https://crypto.news/feed    !
+https://coinlabz.com/feed    !
+https://bitrss.com/rss.xml    !
+https://bitcointe.com/feed    !
+https://zycrypto.com/feed    !
+https://coolwallet.io/blogs/blog.atom    !
+https://thebitcoinnews.com/feed    !
+https://tronweekly.com/feed    !
+https://talkcrypto.org/blog/feed    !
+https://cryptogiggle.com/feed    !
+https://e-cryptonews.com/feed    !
+https://coinidol.com/rss2    !
+https://zebpay.com/feed    !
+https://coincheckup.com/blog/feed    !
+https://cryptoverze.com/feed    !
+https://trustnodes.com/feed    !
+https://blog.bitfinex.com/feed    !
+https://bitcoinik.com/feed    !
+https://bitdegree.org/crypto/news/rss    !
+https://thecoinspost.com/feed    !
+https://bitcoinethereumnews.com/feed    !
+https://u.today/rss    !
+https://news.bitcoin.com/feed    !
+https://blockchain.news/rss    !
+https://currencycrypt.net/feed    !
+https://medium.com/feed/coinmonks    !
+https://cryptonews.com.au/feed    !
+https://coingeek.com/feed    !
+https://moonwhale.io/feed    !
+https://bitemycoin.com/feed    !
+https://blog.bitmex.com/feed    !
+https://fullycrypto.com/feed    !
+https://cryptonews.com/news/feed    !
+https://cryptoadventure.com/feed    !
+https://cryptobreaking.com/feed    !
+https://cryptela.com/blog-rss    !
+https://insidebitcoins.com/feed    !
+https://coinjournal.net/feed    !
+https://cryptobullsclub.com/feed    !
+https://ambcrypto.com/feed    !
+https://decrypt.co/feed    !
+https://cryptomaton.org/feed    !
+https://multicoin.capital/rss.xml    !
+https://cryptodaily.co.uk/feed    !
+https://buyucoin.com/crypto-labs/feed    !
+https://allincrypto.com/feed    !
+https://coincentral.com/news/feed    !
+https://tradingbrowser.com/feed    !
+https://coinstats.app/blog/feed    !
+https://coinsutra.com/blog/feed    !
+https://coinpedia.org/feed    !
+https://alexablockchain.com/feed    !
+https://coindoo.com/feed    !
+https://dailycoin.com/feed    !
+https://thenewscrypto.com/feed    !
+https://blog.cex.io/feed    !
+https://bitpinas.com/feed    !
+https://nowpayments.io/blog/feed    !
+https://komodoplatform.com/en/blog/rss    !
+https://webscrypto.com/feed    !
+https://cointikka.com/feed    !
+https://bitcoinnews.com/feed    !
+https://changelly.com/blog/feed    !
+https://thecryptobasic.com/feed    !
+https://cryptonewsz.com/feed    !
+https://cryptoshrypto.com/feed    !
+https://coinchapter.com/feed    !
+https://coingape.com/feed    !
+https://cryptoninjas.net/feed    !
+https://crypto.aabeyllc.com/feed    !
+https://livebitcoinnews.com/feed    !
+https://cryptocurrencynews.com/feed    !
+https://wunderbit.co/en/rss    !
+https://stealthex.io/blog/feed    !
+https://nulltx.com/feed    !
+https://blocknewsmedia.com/feed    !
+https://bitrates.com/feed/rss    !
+https://crypto-economy.com/feed    !
+https://blockonomi.com/feed    !

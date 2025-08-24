@@ -1,0 +1,4 @@
+
+# Requirements for tableintegrated.py and tabletpost.py
+psutil>=5.9.0
+pyclip>=0.7.0
