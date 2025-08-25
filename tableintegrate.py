@@ -339,37 +339,61 @@ def check_and_clear_lock_file():
 
 def parse_search_folders():
     """Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses."""
-    if not os.path.isfile(URLS_FILE):
-        print(f"Error: URLs file not found at {URLS_FILE}")
+    if not os.path.exists(URLS_FILE):
+        print(f"[ERROR] URLs file does not exist at {URLS_FILE}")
         sys.exit(1)
-    
+    if not os.path.isfile(URLS_FILE):
+        print(f"[ERROR] Path {URLS_FILE} exists but is not a file")
+        sys.exit(1)
+    if not os.access(URLS_FILE, os.R_OK):
+        print(f"[ERROR] URLs file at {URLS_FILE} is not readable")
+        sys.exit(1)
+
     search_folders = []
-    with open(URLS_FILE, 'r') as f:
-        for line in f:
-            line = line.strip()
-            if line.startswith('"') and line.endswith('"'):
-                line = line[1:-1]
-            if line.startswith("query:"):
-                match = re.match(r'^query:([^:]+):(.+)$', line)
-                if match:
-                    name = match.group(1)
-                    condition = match.group(2)
-                    terms = []
-                    logic = "AND"  # Default logic
-                    if condition == 'unread = "yes"':
-                        terms = ["unread"]
-                    else:
-                        # Check for OR within parentheses, e.g., (title =~ "starv" or title =~ "famine")
-                        or_match = re.search(r'\(\s*title =~ \\"([^\\"]+)\\"\s+or\s+title =~ \\"([^\\"]+)\\"\s*\)', condition)
-                        if or_match:
-                            terms = [or_match.group(1).lower(), or_match.group(2).lower()]
-                            logic = "OR"
+    try:
+        with open(URLS_FILE, 'r') as f:
+            lines = f.readlines()
+            if not lines:
+                print("[ERROR] URLs file is empty")
+                sys.exit(1)
+            for i, line in enumerate(lines, 1):
+                line = line.strip()
+                # Skip lines that are just URLs (not queries)
+                if line.startswith('http') or line.endswith('!'):
+                    continue
+                if not line:
+                    continue
+                if line.startswith('"') and line.endswith('"'):
+                    line = line[1:-1]
+                if line.startswith("query:"):
+                    match = re.match(r'^query:([^:]+):(.+)$', line)
+                    if match:
+                        name = match.group(1)
+                        condition = match.group(2)
+                        terms = []
+                        logic = "AND"  # Default logic
+                        if condition == 'unread = "yes"':
+                            terms = ["unread"]
                         else:
-                            # Standard AND terms
-                            term_matches = re.findall(r'title =~ \\"([^\\"]+)\\"', condition)
-                            for term in term_matches:
-                                terms.extend([t.lower() for t in term.split()])
-                    search_folders.append({"name": name, "terms": terms, "logic": logic})
+                            # Check for OR within parentheses
+                            or_match = re.search(r'\(\s*((?:title =~ \\"[^\\"]+\\"\s*(?:or\s*title =~ \\"[^\\"]+\\"\s*)*))\)', condition)
+                            if or_match:
+                                or_clause = or_match.group(1)
+                                or_terms = re.findall(r'title =~ \\"([^\\"]+)\\"', or_clause)
+                                terms = [term.lower() for term in or_terms]
+                                logic = "OR"
+                            else:
+                                term_matches = re.findall(r'title =~ \\"([^\\"]+)\\"', condition)
+                                for term in term_matches:
+                                    terms.extend([t.lower() for t in term.split()])
+                        search_folders.append({"name": name, "terms": terms, "logic": logic})
+                    else:
+                         pass
+                else:
+                     pass
+    except Exception as e:
+        print(f"[ERROR] Error reading or processing file: {e}")
+        sys.exit(1)
     return search_folders
 
 def count_unread_articles(terms, logic):
@@ -386,11 +410,17 @@ def count_unread_articles(terms, logic):
         else:
             where_clause = "unread = 1"
             placeholders = [f'%{term}%' for term in terms]
+            
+            # Fix the SQL query to handle variable number of bindings
             if logic == "OR":
-                where_clause += f" AND (title LIKE ? OR title LIKE ?)"
+                # Create OR conditions for all terms
+                or_conditions = " OR ".join(["title LIKE ?"] * len(terms))
+                where_clause += f" AND ({or_conditions})"
             else:
-                for i in range(len(terms)):
-                    where_clause += f" AND title LIKE ?"
+                # Create AND conditions for all terms
+                for _ in terms:
+                    where_clause += " AND title LIKE ?"
+            
             query = f"SELECT COUNT(*) FROM rss_item WHERE {where_clause}"
             cursor.execute(query, placeholders)
         count = cursor.fetchone()[0]
@@ -416,11 +446,17 @@ def get_article_urls(terms, logic):
         else:
             where_clause = "unread = 1"
             placeholders = [f'%{term}%' for term in terms]
+            
+            # Fix the SQL query to handle variable number of bindings
             if logic == "OR":
-                where_clause += f" AND (title LIKE ? OR title LIKE ?)"
+                # Create OR conditions for all terms
+                or_conditions = " OR ".join(["title LIKE ?"] * len(terms))
+                where_clause += f" AND ({or_conditions})"
             else:
-                for i in range(len(terms)):
-                    where_clause += f" AND title LIKE ?"
+                # Create AND conditions for all terms
+                for _ in terms:
+                    where_clause += " AND title LIKE ?"
+            
             query = f"SELECT url FROM rss_item WHERE {where_clause}"
             cursor.execute(query, placeholders)
         urls = [row[0] for row in cursor.fetchall()]
