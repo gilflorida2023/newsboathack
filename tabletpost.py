@@ -202,8 +202,8 @@ def process_tweets(max_length=257):
         # Ensure database is closed and Newsboat is restarted
         if conn:
             conn.close()
-        if was_running:
-            start_newsboat()
+#        if was_running:
+#            start_newsboat()
 
 if __name__ == "__main__":
     try:
