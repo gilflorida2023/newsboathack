@@ -803,16 +803,16 @@ def main():
         worker_pool.shutdown()
         if db:
             db.close()
-        if was_running:
-            # Start Newsboat in a way that doesn't block program exit
-            try:
-                subprocess.Popen(['newsboat'], 
-                               start_new_session=True,
-                               stdout=subprocess.DEVNULL,
-                               stderr=subprocess.DEVNULL)
-                print("Newsboat restarted successfully")
-            except Exception as e:
-                print(f"Warning: Could not restart Newsboat - {str(e)}")
+#        if was_running:
+#            # Start Newsboat in a way that doesn't block program exit
+#            try:
+#                subprocess.Popen(['newsboat'], 
+#                               start_new_session=True,
+#                               stdout=subprocess.DEVNULL,
+#                               stderr=subprocess.DEVNULL)
+#                print("Newsboat restarted successfully")
+#            except Exception as e:
+#                print(f"Warning: Could not restart Newsboat - {str(e)}")
 
 if __name__ == "__main__":
     main()
