@@ -66,6 +66,7 @@
 "query:israel_jordan:unread = \"yes\" and title =~ \"jordan\" and title =~ \"israel\""
 "query:israel_yemen:unread = \"yes\" and title =~ \"yemen\" and title =~ \"israel\""
 "query:rfk:unread = \"yes\" and title =~ \"rfk\""
+"query:deepstate:unread = \"yes\" and ( title =~ \"deepstate\" and title =~ \"covid\" )"
 "query:starve:unread = \"yes\" and ( title =~ \"starv\" or title =~ \"famine\" )"
 "query:disaster:unread = \"yes\" and ( title =~ \"rain\" or title =~ \"tsunami\" or title =~ \"flood\" )"
 "query:elon_companies:unread = \"yes\" and ( title =~ \"tesla\" or  title =~ \"spacex\" or title =~ \"boring co\" or title =~ \"xAI\" )"
