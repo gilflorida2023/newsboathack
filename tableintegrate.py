@@ -1,4 +1,20 @@
 #!/usr/bin/env python3
+"""
+Newsboat URL Processor with AI Integration
+
+This script processes RSS feed URLs from Newsboat using Ollama hosts
+to generate AI-powered summaries and categorizations.
+
+Usage:
+    ./tableintegrate.py <ollama_host1> [<ollama_host2> ...]
+
+Features:
+- Processes unread articles from Newsboat search folders
+- Uses multiple Ollama hosts for parallel processing
+- Maintains a queue of URLs to process
+- Stores processed results in a database
+"""
+
 import os
 import sys
 import sqlite3
@@ -20,7 +36,15 @@ LOCK_FILE = os.path.expanduser("~/.newsboat/cache.db.lock")
 BACKUP_DB = os.path.expanduser("~/.newsboat/cache.db.bak")
 
 class OllamaWorkerPool:
+    """A pool of workers for processing URLs using Ollama hosts."""
+    
     def __init__(self, hosts):
+        """
+        Initialize the worker pool.
+        
+        Args:
+            hosts (list): List of Ollama host addresses
+        """
         self.hosts = hosts
         self.task_queue = Queue()
         self.result_queue = Queue()
@@ -28,7 +52,7 @@ class OllamaWorkerPool:
         self.shutdown_flag = False
         
     def start(self):
-        """Start worker threads"""
+        """Start worker threads."""
         for host in self.hosts:
             worker = threading.Thread(
                 target=self._worker_loop,
@@ -39,7 +63,12 @@ class OllamaWorkerPool:
             self.workers.append(worker)
     
     def _worker_loop(self, host):
-        """Worker thread processing loop"""
+        """
+        Worker thread processing loop.
+        
+        Args:
+            host (str): The Ollama host this worker is connected to
+        """
         while not self.shutdown_flag:
             try:
                 task = self.task_queue.get(timeout=1)
@@ -60,7 +89,16 @@ class OllamaWorkerPool:
                 continue
     
     def _process_url(self, host, url):
-        """Process a single URL using the specified host"""
+        """
+        Process a single URL using the specified host.
+        
+        Args:
+            host (str): Ollama host address
+            url (str): URL to process
+            
+        Returns:
+            tuple: (promotion_text, processing_time, host)
+        """
         try:
             start_time = time.time()
             result = subprocess.run(
@@ -72,7 +110,7 @@ class OllamaWorkerPool:
             )
             processing_time = time.time() - start_time
             if processing_time > 30:  # Log slow processing
-                print(f"  [i] Processed in {processing_time:.1f}s on {host}: {url[:60]}...")
+                print(f"  [i] Processed in {processing_time:.1f}s on {host}: {url}")
             promotion = clean_text(result.stdout.strip())
             return (promotion if promotion and "Error" not in promotion else "Error", 
                     processing_time, 
@@ -85,11 +123,17 @@ class OllamaWorkerPool:
             return ("Error", 0, host)
     
     def add_task(self, url, callback=None):
-        """Add a URL processing task to the queue"""
+        """
+        Add a URL processing task to the queue.
+        
+        Args:
+            url (str): URL to process
+            callback (function): Optional callback function
+        """
         self.task_queue.put((url, callback))
     
     def shutdown(self):
-        """Gracefully shutdown the worker pool"""
+        """Gracefully shutdown the worker pool."""
         self.shutdown_flag = True
         for _ in self.workers:
             self.task_queue.put(None)
@@ -97,7 +141,15 @@ class OllamaWorkerPool:
             worker.join(timeout=5)
 
 class ActionDatabase:
+    """Database handler for storing URLs and processing results."""
+    
     def __init__(self, db_path):
+        """
+        Initialize the database connection.
+        
+        Args:
+            db_path (str): Path to the SQLite database file
+        """
         self.db_path = db_path
         self.conn = None
         try:
@@ -112,7 +164,7 @@ class ActionDatabase:
             raise
         
     def _create_tables(self):
-        """Create the queue and action tables if they don't exist"""
+        """Create the queue and action tables if they don't exist."""
         cursor = self.conn.cursor()
         
         # Check if actions table exists and has the correct schema
@@ -155,7 +207,7 @@ class ActionDatabase:
         self.conn.commit()
         
     def clear_queue(self):
-        """Clear all records from the queue table"""
+        """Clear all records from the queue table."""
         if not self.conn:
             return 0
         cursor = self.conn.cursor()
@@ -164,7 +216,7 @@ class ActionDatabase:
         return cursor.rowcount
         
     def clear_actions(self):
-        """Clear all records from the action table"""
+        """Clear all records from the action table."""
         if not self.conn:
             return 0
         cursor = self.conn.cursor()
@@ -173,7 +225,7 @@ class ActionDatabase:
         return cursor.rowcount
         
     def count_queue(self):
-        """Count records in the queue table"""
+        """Count records in the queue table."""
         if not self.conn:
             return 0
         cursor = self.conn.cursor()
@@ -181,7 +233,7 @@ class ActionDatabase:
         return cursor.fetchone()[0]
         
     def count_actions(self):
-        """Count records in the action table"""
+        """Count records in the action table."""
         if not self.conn:
             return 0
         cursor = self.conn.cursor()
@@ -189,7 +241,16 @@ class ActionDatabase:
         return cursor.fetchone()[0]
         
     def add_to_queue(self, url, folder_name):
-        """Add a URL to the queue table"""
+        """
+        Add a URL to the queue table.
+        
+        Args:
+            url (str): URL to add to queue
+            folder_name (str): Name of the folder this URL belongs to
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
         if not self.conn:
             return False
         cursor = self.conn.cursor()
@@ -206,7 +267,7 @@ class ActionDatabase:
             return False
             
     def get_queue_urls(self):
-        """Get all URLs from the queue table"""
+        """Get all URLs from the queue table."""
         if not self.conn:
             return []
         cursor = self.conn.cursor()
@@ -214,7 +275,15 @@ class ActionDatabase:
         return [row[0] for row in cursor.fetchall()]
         
     def remove_from_queue(self, url):
-        """Remove a URL from the queue table"""
+        """
+        Remove a URL from the queue table.
+        
+        Args:
+            url (str): URL to remove from queue
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
         if not self.conn:
             return False
         cursor = self.conn.cursor()
@@ -227,7 +296,16 @@ class ActionDatabase:
             return False
             
     def add_to_actions(self, promotion, url):
-        """Add a processed result to the action table"""
+        """
+        Add a processed result to the action table.
+        
+        Args:
+            promotion (str): AI-generated promotion text
+            url (str): URL that was processed
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
         if not self.conn:
             return False
         cursor = self.conn.cursor()
@@ -255,13 +333,22 @@ class ActionDatabase:
             return False
     
     def close(self):
-        """Close the database connection"""
+        """Close the database connection."""
         if self.conn:
             self.conn.close()
             self.conn = None
 
 def determine_promotion(url, worker_pool):
-    """Generate promotion using worker pool without timeouts"""
+    """
+    Generate promotion using worker pool without timeouts.
+    
+    Args:
+        url (str): URL to process
+        worker_pool (OllamaWorkerPool): Worker pool instance
+        
+    Returns:
+        tuple: (promotion_text, processing_time, host)
+    """
     result_queue = Queue()
     
     def callback(url, result):
@@ -277,7 +364,12 @@ def determine_promotion(url, worker_pool):
         return ("Error", 0, "unknown")
 
 def stop_newsboat():
-    """Gracefully stop Newsboat process if running"""
+    """
+    Gracefully stop Newsboat process if running.
+    
+    Returns:
+        bool: True if Newsboat was running, False otherwise
+    """
     try:
         for proc in psutil.process_iter(['name']):
             if proc.info['name'] == 'newsboat':
@@ -294,7 +386,15 @@ def stop_newsboat():
         return False
 
 def clean_text(text):
-    """Remove control characters and normalize to ASCII"""
+    """
+    Remove control characters and normalize to ASCII.
+    
+    Args:
+        text (str): Text to clean
+        
+    Returns:
+        str: Cleaned text
+    """
     if not text:
         return ""
     text = re.sub(r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])', '', text)
@@ -306,7 +406,12 @@ def clean_text(text):
     return text
 
 def check_and_clear_lock_file():
-    """Check for and clear stale lock file if Newsboat is not running."""
+    """
+    Check for and clear stale lock file if Newsboat is not running.
+    
+    Returns:
+        bool: True if lock file was cleared or doesn't exist, False otherwise
+    """
     if not os.path.isfile(LOCK_FILE):
         return True
     try:
@@ -338,7 +443,12 @@ def check_and_clear_lock_file():
     return True
 
 def parse_search_folders():
-    """Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses."""
+    """
+    Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses.
+    
+    Returns:
+        list: List of search folder dictionaries with name, terms, and logic
+    """
     if not os.path.exists(URLS_FILE):
         print(f"[ERROR] URLs file does not exist at {URLS_FILE}")
         sys.exit(1)
@@ -397,7 +507,16 @@ def parse_search_folders():
     return search_folders
 
 def count_unread_articles(terms, logic):
-    """Count unread articles for a search folder's terms and logic."""
+    """
+    Count unread articles for a search folder's terms and logic.
+    
+    Args:
+        terms (list): List of search terms
+        logic (str): Logic to use ("AND" or "OR")
+        
+    Returns:
+        int: Count of unread articles matching the criteria
+    """
     if not check_and_clear_lock_file():
         return 0
         
@@ -432,7 +551,16 @@ def count_unread_articles(terms, logic):
     return count
 
 def get_article_urls(terms, logic):
-    """Retrieve article URLs for a search folder's terms and logic."""
+    """
+    Retrieve article URLs for a search folder's terms and logic.
+    
+    Args:
+        terms (list): List of search terms
+        logic (str): Logic to use ("AND" or "OR")
+        
+    Returns:
+        list: List of URLs matching the criteria
+    """
     if not check_and_clear_lock_file():
         return []
         
@@ -467,7 +595,12 @@ def get_article_urls(terms, logic):
     return urls
 
 def get_nonzero_folders():
-    """Get search folders with non-zero unread articles, sorted by count."""
+    """
+    Get search folders with non-zero unread articles, sorted by count.
+    
+    Returns:
+        list: List of folders with unread articles, sorted by count
+    """
     search_folders = parse_search_folders()
     nonzero_folders = []
     for folder in search_folders:
@@ -477,7 +610,13 @@ def get_nonzero_folders():
     return sorted(nonzero_folders, key=lambda x: x["count"], reverse=True)
 
 def add_folders_to_queue(folders, db):
-    """Add URLs from selected folders to the queue table"""
+    """
+    Add URLs from selected folders to the queue table.
+    
+    Args:
+        folders (list): List of folder dictionaries
+        db (ActionDatabase): Database instance
+    """
     if not db:
         print("Database connection not available")
         return
@@ -510,7 +649,13 @@ def add_folders_to_queue(folders, db):
         print("Invalid input - please enter numbers separated by commas")
 
 def process_queue(worker_pool, db):
-    """Process URLs from queue table using AI workers"""
+    """
+    Process URLs from queue table using AI workers.
+    
+    Args:
+        worker_pool (OllamaWorkerPool): Worker pool instance
+        db (ActionDatabase): Database instance
+    """
     if not db:
         print("Database connection not available")
         return
@@ -526,6 +671,8 @@ def process_queue(worker_pool, db):
     queue_urls = db.get_queue_urls()
     
     total_processed = 0
+    current_item = 0
+    
     # Process all URLs through worker pool
     with ThreadPoolExecutor(max_workers=len(worker_pool.hosts)) as executor:
         futures = {
@@ -536,29 +683,43 @@ def process_queue(worker_pool, db):
         }
 
         for future in as_completed(futures):
+            current_item += 1
             url, (promotion, duration, host) = future.result()
             
             # Remove from queue regardless of success/failure
             if not db.remove_from_queue(url):
-                print(f"  [!] Failed to remove from queue: {url[:60]}...")
+                print(f"  [{current_item}/{queue_count}] Failed to remove from queue: {url}")
             
             if promotion == "Error":
-                print(f"  [!] Failed on {host}: {url[:80]}...")
+                print(f"  [{current_item}/{queue_count}] Failed on {host}: {url}")
                 continue
 
             if db.add_to_actions(promotion, url):
-                print(f"  [+] {host} ({duration:.1f}s): {promotion[:60]}...")
+                print(f"  [{current_item}/{queue_count}] {host} ({duration:.1f}s): {promotion[:60]}...")
                 total_processed += 1
             else:
-                print(f"  [!] Failed to add to actions: {url[:60]}...")
+                print(f"  [{current_item}/{queue_count}] Failed to add to actions: {url}")
                 print(f"      Promotion length: {len(promotion)}")
                 print(f"      Promotion preview: {promotion[:100]}...")
 
     print(f"\nProcessed {total_processed} URLs. Queue is now empty.")
 
+def print_usage():
+    """Print usage information."""
+    print(__doc__)
+    print("Available commands:")
+    print("  [a] Add folders to queue")
+    print("  [p] Process queue with AI")
+    print("  [cq] Clear queue table")
+    print("  [ca] Clear actions table")
+    print("  [l] List search folders")
+    print("  [q] Quit")
+
 def main():
+    """Main function to run the URL processor."""
     if len(sys.argv) < 2:
-        print("Usage: ./tableintegrate.py <ollama_host1> [<ollama_host2> ...]")
+        print("Error: No Ollama hosts specified")
+        print_usage()
         sys.exit(1)
     
     ollama_hosts = sys.argv[1:]
@@ -585,12 +746,7 @@ def main():
         
         while True:
             print("\nMain Menu:")
-            print("[a] Add folders to queue")
-            print("[p] Process queue with AI")
-            print("[cq] Clear queue table")
-            print("[ca] Clear actions table")
-            print("[l] List search folders")
-            print("[q] Quit")
+            print_usage()
             
             selection = input("\nEnter selection: ").strip().lower()
             
