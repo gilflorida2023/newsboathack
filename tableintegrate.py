@@ -392,7 +392,7 @@ def clean_text(text):
     Args:
         text (str): Text to clean
         
-    Returns:
+        Returns:
         str: Cleaned text
     """
     if not text:
@@ -703,10 +703,10 @@ def process_queue(worker_pool, db):
                 print(f"      Promotion preview: {promotion[:100]}...")
 
     print(f"\nProcessed {total_processed} URLs. Queue is now empty.")
-
-def print_usage():
-    """Print usage information."""
-    print(__doc__)
+    
+def print_main_menu():
+    """Print the main menu options without the usage text."""
+    print("\nMain Menu:")
     print("Available commands:")
     print("  [a] Add folders to queue")
     print("  [p] Process queue with AI")
@@ -717,9 +717,25 @@ def print_usage():
 
 def main():
     """Main function to run the URL processor."""
+    
+    # The help text from the docstring is moved here
+    HELP_TEXT = """Newsboat URL Processor with AI Integration
+
+This script processes RSS feed URLs from Newsboat using Ollama hosts
+to generate AI-powered summaries and categorizations.
+
+Usage:
+    ./tableintegrate.py <ollama_host1> [<ollama_host2> ...]
+
+Features:
+- Processes unread articles from Newsboat search folders
+- Uses multiple Ollama hosts for parallel processing
+- Maintains a queue of URLs to process
+- Stores processed results in a database"""
+    
     if len(sys.argv) < 2:
         print("Error: No Ollama hosts specified")
-        print_usage()
+        print(HELP_TEXT)
         sys.exit(1)
     
     ollama_hosts = sys.argv[1:]
@@ -745,8 +761,7 @@ def main():
         print(f"Actions: {db.count_actions()} processed URLs")
         
         while True:
-            print("\nMain Menu:")
-            print_usage()
+            print_main_menu()
             
             selection = input("\nEnter selection: ").strip().lower()
             
