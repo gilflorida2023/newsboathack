@@ -442,6 +442,69 @@ def check_and_clear_lock_file():
         return False
     return True
 
+#def parse_search_folders():
+#    """
+#    Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses.
+#    
+#    Returns:
+#        list: List of search folder dictionaries with name, terms, and logic
+#    """
+#    if not os.path.exists(URLS_FILE):
+#        print(f"[ERROR] URLs file does not exist at {URLS_FILE}")
+#        sys.exit(1)
+#    if not os.path.isfile(URLS_FILE):
+#        print(f"[ERROR] Path {URLS_FILE} exists but is not a file")
+#        sys.exit(1)
+#    if not os.access(URLS_FILE, os.R_OK):
+#        print(f"[ERROR] URLs file at {URLS_FILE} is not readable")
+#        sys.exit(1)
+#
+#    search_folders = []
+#    try:
+#        with open(URLS_FILE, 'r') as f:
+#            lines = f.readlines()
+#            if not lines:
+#                print("[ERROR] URLs file is empty")
+#                sys.exit(1)
+#            for i, line in enumerate(lines, 1):
+#                line = line.strip()
+#                # Skip lines that are just URLs (not queries)
+#                if line.startswith('http') or line.endswith('!'):
+#                    continue
+#                if not line:
+#                    continue
+#                if line.startswith('"') and line.endswith('"'):
+#                    line = line[1:-1]
+#                if line.startswith("query:"):
+#                    match = re.match(r'^query:([^:]+):(.+)$', line)
+#                    if match:
+#                        name = match.group(1)
+#                        condition = match.group(2)
+#                        terms = []
+#                        logic = "AND"  # Default logic
+#                        if condition == 'unread = "yes"':
+#                            terms = ["unread"]
+#                        else:
+#                            # Check for OR within parentheses
+#                            or_match = re.search(r'\(\s*((?:title =~ \\"[^\\"]+\\"\s*(?:or\s*title =~ \\"[^\\"]+\\"\s*)*))\)', condition)
+#                            if or_match:
+#                                or_clause = or_match.group(1)
+#                                or_terms = re.findall(r'title =~ \\"([^\\"]+)\\"', or_clause)
+#                                terms = [term.lower() for term in or_terms]
+#                                logic = "OR"
+#                            else:
+#                                term_matches = re.findall(r'title =~ \\"([^\\"]+)\\"', condition)
+#                                for term in term_matches:
+#                                    terms.extend([t.lower() for t in term.split()])
+#                        search_folders.append({"name": name, "terms": terms, "logic": logic})
+#                    else:
+#                         pass
+#                else:
+#                     pass
+#    except Exception as e:
+#        print(f"[ERROR] Error reading or processing file: {e}")
+#        sys.exit(1)
+#    return search_folders
 def parse_search_folders():
     """
     Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses.
@@ -468,13 +531,20 @@ def parse_search_folders():
                 sys.exit(1)
             for i, line in enumerate(lines, 1):
                 line = line.strip()
-                # Skip lines that are just URLs (not queries)
-                if line.startswith('http') or line.endswith('!'):
-                    continue
+                # Skip empty lines
                 if not line:
                     continue
+                
+                # Handle feed lines (remove trailing spaces and ! if present)
+                if line.startswith('http'):
+                    # Remove trailing spaces and ! if they exist
+                    line = re.sub(r'\s*!\s*$', '', line)
+                    continue
+                
+                # Handle quoted queries
                 if line.startswith('"') and line.endswith('"'):
                     line = line[1:-1]
+                
                 if line.startswith("query:"):
                     match = re.match(r'^query:([^:]+):(.+)$', line)
                     if match:
@@ -498,9 +568,9 @@ def parse_search_folders():
                                     terms.extend([t.lower() for t in term.split()])
                         search_folders.append({"name": name, "terms": terms, "logic": logic})
                     else:
-                         pass
+                        print(f"[ERROR] Invalid query format on line {i}: {line}")
                 else:
-                     pass
+                    print(f"[WARNING] Skipping unrecognized line {i}: {line}")
     except Exception as e:
         print(f"[ERROR] Error reading or processing file: {e}")
         sys.exit(1)
