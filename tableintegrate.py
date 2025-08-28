@@ -576,6 +576,36 @@ def parse_search_folders():
         sys.exit(1)
     return search_folders
 
+
+def get_feed_url_for_article(article_url):
+    """
+    Given an article URL, return the associated RSS feed URL from the Newsboat cache. gil
+
+    Args:
+        article_url (str): The article's URL.
+
+    Returns:
+        str or None: The RSS feed URL if found, else None.
+    """
+    if not check_and_clear_lock_file():
+        return None
+
+    conn = sqlite3.connect(CACHE_DB)
+    cursor = conn.cursor()
+    feed_url = None
+    try:
+        # Directly get the feedurl from rss_item using the article URL
+        cursor.execute("SELECT feedurl FROM rss_item WHERE url = ?", (article_url,))
+        row = cursor.fetchone()
+        if row:
+            feed_url = row[0]
+    except sqlite3.Error as e:
+        print(f"SQLite error while getting feed URL: {e}")
+    finally:
+        conn.close()
+    return feed_url
+
+
 def count_unread_articles(terms, logic):
     """
     Count unread articles for a search folder's terms and logic.
@@ -765,7 +795,12 @@ def process_queue(worker_pool, db):
                 continue
 
             if db.add_to_actions(promotion, url):
-                print(f"  [{current_item}/{queue_count}] {host} ({duration:.1f}s): {promotion[:60]}...")
+                #print(f"  [{current_item}/{queue_count}] {host} ({duration:.1f}s): {promotion[:60]}...")
+                rssfeed = get_feed_url_for_article(url)
+                if rssfeed is None:
+                    rssfeed = "unknown"
+
+                print(f"  [{current_item}/{queue_count}] {rssfeed} ({duration:.1f}s): {promotion[:60]}...")
                 total_processed += 1
             else:
                 print(f"  [{current_item}/{queue_count}] Failed to add to actions: {url}")
