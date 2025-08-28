@@ -204,6 +204,15 @@ class ActionDatabase:
         )
         """)
         
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS feed_stats (
+            feed_url TEXT PRIMARY KEY,
+            usage_count INTEGER NOT NULL DEFAULT 0,
+            date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
+
         self.conn.commit()
         
     def clear_queue(self):
