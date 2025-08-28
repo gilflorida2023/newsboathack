@@ -584,7 +584,7 @@ def parse_search_folders():
         print(f"[ERROR] Error reading or processing file: {e}")
         sys.exit(1)
     return search_folders
-
+##########  N  E  W  ##########################################
 
 def get_feed_url_for_article(article_url):
     """
@@ -615,6 +615,156 @@ def get_feed_url_for_article(article_url):
     return feed_url
 
 
+def view_feed_stats(db):
+    """
+    Display feed usage statistics.
+    
+    Args:
+        db (ActionDatabase): Database instance
+    """
+    if not db or not db.conn:
+        print("Database connection not available")
+        return
+        
+    cursor = db.conn.cursor()
+    try:
+        cursor.execute("""
+            SELECT feed_url, usage_count, date_added, last_used 
+            FROM feed_stats 
+            ORDER BY usage_count DESC, last_used DESC
+        """)
+        
+        results = cursor.fetchall()
+        
+        if not results:
+            print("No feed statistics available")
+            return
+            
+        print("\nFeed Usage Statistics:")
+        print("-" * 80)
+        print(f"{'Feed URL':<40} {'Uses':<6} {'Added':<12} {'Last Used':<12}")
+        print("-" * 80)
+        
+        for feed_url, usage_count, date_added, last_used in results:
+            # Format dates for better readability
+            added = date_added.split()[0] if date_added else "Unknown"
+            used = last_used.split()[0] if last_used else "Never"
+            
+            # Truncate long URLs for display
+            display_url = feed_url[:37] + "..." if len(feed_url) > 40 else feed_url
+            
+            print(f"{display_url:<40} {usage_count:<6} {added:<12} {used:<12}")
+            
+    except sqlite3.Error as e:
+        print(f"SQLite error retrieving feed stats: {e}")
+
+
+
+def update_feed_stats(db, article_url):
+    """
+    Update feed statistics for the RSS feed that generated the article URL.
+    
+    Args:
+        db (ActionDatabase): Database instance
+        article_url (str): URL of the article to track
+        
+    Returns:
+        bool: True if successful, False otherwise
+    """
+    if not db or not db.conn:
+        print("Database connection not available")
+        return False
+        
+    # Get the RSS feed URL for this article
+    feed_url = get_feed_url_for_article(article_url)
+    if not feed_url:
+        print(f"Could not determine RSS feed for article: {article_url}")
+        return False
+    
+    cursor = db.conn.cursor()
+    try:
+        # Check if the feed already exists in stats
+        cursor.execute("SELECT usage_count FROM feed_stats WHERE feed_url = ?", (feed_url,))
+        result = cursor.fetchone()
+        
+        if result:
+            # Update existing feed stats
+            cursor.execute("""
+                UPDATE feed_stats 
+                SET usage_count = usage_count + 1, last_used = CURRENT_TIMESTAMP
+                WHERE feed_url = ?
+            """, (feed_url,))
+        else:
+            # Insert new feed stats
+            cursor.execute("""
+                INSERT INTO feed_stats (feed_url, usage_count, last_used)
+                VALUES (?, 1, CURRENT_TIMESTAMP)
+            """, (feed_url,))
+        
+        db.conn.commit()
+        print(f"Updated stats for feed: {feed_url}")
+        return True
+        
+    except sqlite3.Error as e:
+        print(f"SQLite error updating feed stats: {e}")
+        db.conn.rollback()
+        return False
+
+
+def list_query_folders():
+    """
+    List all query folders from the Newsboat URLs file.
+    
+    Returns:
+        list: List of query folder names
+    """
+    search_folders = parse_search_folders()
+    
+    if not search_folders:
+        print("No query folders found")
+        return []
+    
+    print("\nQuery Folders:")
+    for i, folder in enumerate(search_folders, 1):
+        print(f"{i}. {folder['name']}")
+    
+    return [folder['name'] for folder in search_folders]
+
+
+def list_folder_urls(folder_name):
+    """
+    List all URLs in a specific search folder.
+    
+    Args:
+        folder_name (str): Name of the search folder to list URLs from
+        
+    Returns:
+        list: List of URLs in the specified folder
+    """
+    search_folders = parse_search_folders()
+    
+    # Find the folder with matching name
+    target_folder = None
+    for folder in search_folders:
+        if folder["name"] == folder_name:
+            target_folder = folder
+            break
+    
+    if not target_folder:
+        print(f"Folder '{folder_name}' not found")
+        return []
+    
+    # Get URLs from the folder
+    urls = get_article_urls(target_folder["terms"], target_folder["logic"])
+    
+    print(f"\nURLs in folder '{folder_name}':")
+    for i, url in enumerate(urls, 1):
+        print(f"{i}. {url}")
+    
+    return urls
+
+
+####################################################
 def count_unread_articles(terms, logic):
     """
     Count unread articles for a search folder's terms and logic.
