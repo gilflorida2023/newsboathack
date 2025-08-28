@@ -203,16 +203,13 @@ class ActionDatabase:
             added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-        
         cursor.execute("""
         CREATE TABLE IF NOT EXISTS feed_stats (
-            feed_url TEXT PRIMARY KEY,
-            usage_count INTEGER NOT NULL DEFAULT 0,
-            date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            last_used TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            feed_url TEXT NOT NULL,
+            used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
-
         self.conn.commit()
         
     def clear_queue(self):
@@ -451,69 +448,6 @@ def check_and_clear_lock_file():
         return False
     return True
 
-#def parse_search_folders():
-#    """
-#    Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses.
-#    
-#    Returns:
-#        list: List of search folder dictionaries with name, terms, and logic
-#    """
-#    if not os.path.exists(URLS_FILE):
-#        print(f"[ERROR] URLs file does not exist at {URLS_FILE}")
-#        sys.exit(1)
-#    if not os.path.isfile(URLS_FILE):
-#        print(f"[ERROR] Path {URLS_FILE} exists but is not a file")
-#        sys.exit(1)
-#    if not os.access(URLS_FILE, os.R_OK):
-#        print(f"[ERROR] URLs file at {URLS_FILE} is not readable")
-#        sys.exit(1)
-#
-#    search_folders = []
-#    try:
-#        with open(URLS_FILE, 'r') as f:
-#            lines = f.readlines()
-#            if not lines:
-#                print("[ERROR] URLs file is empty")
-#                sys.exit(1)
-#            for i, line in enumerate(lines, 1):
-#                line = line.strip()
-#                # Skip lines that are just URLs (not queries)
-#                if line.startswith('http') or line.endswith('!'):
-#                    continue
-#                if not line:
-#                    continue
-#                if line.startswith('"') and line.endswith('"'):
-#                    line = line[1:-1]
-#                if line.startswith("query:"):
-#                    match = re.match(r'^query:([^:]+):(.+)$', line)
-#                    if match:
-#                        name = match.group(1)
-#                        condition = match.group(2)
-#                        terms = []
-#                        logic = "AND"  # Default logic
-#                        if condition == 'unread = "yes"':
-#                            terms = ["unread"]
-#                        else:
-#                            # Check for OR within parentheses
-#                            or_match = re.search(r'\(\s*((?:title =~ \\"[^\\"]+\\"\s*(?:or\s*title =~ \\"[^\\"]+\\"\s*)*))\)', condition)
-#                            if or_match:
-#                                or_clause = or_match.group(1)
-#                                or_terms = re.findall(r'title =~ \\"([^\\"]+)\\"', or_clause)
-#                                terms = [term.lower() for term in or_terms]
-#                                logic = "OR"
-#                            else:
-#                                term_matches = re.findall(r'title =~ \\"([^\\"]+)\\"', condition)
-#                                for term in term_matches:
-#                                    terms.extend([t.lower() for t in term.split()])
-#                        search_folders.append({"name": name, "terms": terms, "logic": logic})
-#                    else:
-#                         pass
-#                else:
-#                     pass
-#    except Exception as e:
-#        print(f"[ERROR] Error reading or processing file: {e}")
-#        sys.exit(1)
-#    return search_folders
 def parse_search_folders():
     """
     Parse query entries from ~/.newsboat/urls, handling 'or' and parentheses.
@@ -660,56 +594,91 @@ def view_feed_stats(db):
 
 
 
-def update_feed_stats(db, article_url):
+#def update_feed_stats(db, article_url):
+#    """
+#    Update feed statistics for the RSS feed that generated the article URL.
+#    
+#    Args:
+#        db (ActionDatabase): Database instance
+#        article_url (str): URL of the article to track
+#        
+#    Returns:
+#        bool: True if successful, False otherwise
+#    """
+#    if not db or not db.conn:
+#        print("Database connection not available")
+#        return False
+#        
+#    # Get the RSS feed URL for this article
+#    feed_url = get_feed_url_for_article(article_url)
+#    if not feed_url:
+#        print(f"Could not determine RSS feed for article: {article_url}")
+#        return False
+#    
+#    cursor = db.conn.cursor()
+#    try:
+#        # Check if the feed already exists in stats
+#        cursor.execute("SELECT usage_count FROM feed_stats WHERE feed_url = ?", (feed_url,))
+#        result = cursor.fetchone()
+#        
+#        if result:
+#            # Update existing feed stats
+#            cursor.execute("""
+#                UPDATE feed_stats 
+#                SET usage_count = usage_count + 1, last_used = CURRENT_TIMESTAMP
+#                WHERE feed_url = ?
+#            """, (feed_url,))
+#        else:
+#            # Insert new feed stats
+#            cursor.execute("""
+#                INSERT INTO feed_stats (feed_url, usage_count, last_used)
+#                VALUES (?, 1, CURRENT_TIMESTAMP)
+#            """, (feed_url,))
+#        
+#        db.conn.commit()
+#        print(f"Updated stats for feed: {feed_url}")
+#        return True
+#        
+#    except sqlite3.Error as e:
+#        print(f"SQLite error updating feed stats: {e}")
+#        db.conn.rollback()
+#        return False
+
+def update_feed_stats(db, rss_url):
     """
-    Update feed statistics for the RSS feed that generated the article URL.
+    Insert a record with the RSS URL and current timestamp into the feed stats table.
     
     Args:
         db (ActionDatabase): Database instance
-        article_url (str): URL of the article to track
+        rss_url (str): RSS feed URL to record
         
     Returns:
         bool: True if successful, False otherwise
-    """
+    """  
     if not db or not db.conn:
         print("Database connection not available")
         return False
-        
-    # Get the RSS feed URL for this article
-    feed_url = get_feed_url_for_article(article_url)
-    if not feed_url:
-        print(f"Could not determine RSS feed for article: {article_url}")
+    
+    if not rss_url:
+        print("No RSS URL provided")
         return False
     
     cursor = db.conn.cursor()
-    try:
-        # Check if the feed already exists in stats
-        cursor.execute("SELECT usage_count FROM feed_stats WHERE feed_url = ?", (feed_url,))
-        result = cursor.fetchone()
-        
-        if result:
-            # Update existing feed stats
-            cursor.execute("""
-                UPDATE feed_stats 
-                SET usage_count = usage_count + 1, last_used = CURRENT_TIMESTAMP
-                WHERE feed_url = ?
-            """, (feed_url,))
-        else:
-            # Insert new feed stats
-            cursor.execute("""
-                INSERT INTO feed_stats (feed_url, usage_count, last_used)
-                VALUES (?, 1, CURRENT_TIMESTAMP)
-            """, (feed_url,))
-        
+    try: 
+        # Insert a new record with the RSS URL and current timestamp
+        cursor.execute("""
+            INSERT INTO feed_stats (feed_url, used_at)
+            VALUES (?, CURRENT_TIMESTAMP)
+        """, (rss_url,))
+     
         db.conn.commit()
-        print(f"Updated stats for feed: {feed_url}")
-        return True
-        
+        #print(f"Added stats record for feed: {rss_url}")
+        return True 
+     
     except sqlite3.Error as e:
         print(f"SQLite error updating feed stats: {e}")
         db.conn.rollback()
         return False
-
 
 def list_query_folders():
     """
@@ -724,9 +693,9 @@ def list_query_folders():
         print("No query folders found")
         return []
     
-    print("\nQuery Folders:")
-    for i, folder in enumerate(search_folders, 1):
-        print(f"{i}. {folder['name']}")
+    #print("\nQuery Folders:")
+    #for i, folder in enumerate(search_folders, 1):
+        #print(f"{i}. {folder['name']}")
     
     return [folder['name'] for folder in search_folders]
 
@@ -736,8 +705,7 @@ def list_folder_urls(folder_name):
     List all URLs in a specific search folder.
     
     Args:
-        folder_name (str): Name of the search folder to list URLs from
-        
+        folder_name (str): Name of the search folder to list URLs from       
     Returns:
         list: List of URLs in the specified folder
     """
@@ -757,12 +725,20 @@ def list_folder_urls(folder_name):
     # Get URLs from the folder
     urls = get_article_urls(target_folder["terms"], target_folder["logic"])
     
-    print(f"\nURLs in folder '{folder_name}':")
-    for i, url in enumerate(urls, 1):
-        print(f"{i}. {url}")
+    #print(f"\nURLs in folder '{folder_name}':")
+    #for i, url in enumerate(urls, 1):
+        #print(f"{i}. {url}")
     
     return urls
 
+
+
+def update_usage_stats_for_all(db):
+    query_folders = list_query_folders()
+    for query_folder in query_folders:
+        for url in list_folder_urls(query_folder):
+            rssfeed = get_feed_url_for_article(url)
+            update_feed_stats(db, rssfeed)
 
 ####################################################
 def count_unread_articles(terms, logic):
@@ -1018,6 +994,7 @@ Features:
             sys.exit(1)
             
         db = ActionDatabase(CACHE_DB)
+        update_usage_stats_for_all(db)
         
         print("\nNewsboat URL Processor")
         print("=" * 50)
