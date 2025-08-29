@@ -512,8 +512,8 @@ def parse_search_folders():
                         search_folders.append({"name": name, "terms": terms, "logic": logic})
                     else:
                         print(f"[ERROR] Invalid query format on line {i}: {line}")
-                else:
-                    print(f"[WARNING] Skipping unrecognized line {i}: {line}")
+                #else:
+                    #print(f"[WARNING] Skipping unrecognized line {i}: {line}")
     except Exception as e:
         print(f"[ERROR] Error reading or processing file: {e}")
         sys.exit(1)
@@ -680,10 +680,10 @@ def update_feed_stats(db, rss_url):
         db.conn.rollback()
         return False
 
-def list_query_folders():
+    
+def list_query_folders(verbose=True):
     """
     List all query folders from the Newsboat URLs file.
-    
     Returns:
         list: List of query folder names
     """
@@ -693,14 +693,15 @@ def list_query_folders():
         print("No query folders found")
         return []
     
-    #print("\nQuery Folders:")
-    #for i, folder in enumerate(search_folders, 1):
-        #print(f"{i}. {folder['name']}")
+    if verbose:
+        print("\nQuery Folders:")
+        for i, folder in enumerate(search_folders, 1):
+            print(f"{i}. {folder['name']}")
     
     return [folder['name'] for folder in search_folders]
 
 
-def list_folder_urls(folder_name):
+def list_folder_urls(folder_name,verbose=True):
     """
     List all URLs in a specific search folder.
     
@@ -725,18 +726,19 @@ def list_folder_urls(folder_name):
     # Get URLs from the folder
     urls = get_article_urls(target_folder["terms"], target_folder["logic"])
     
-    #print(f"\nURLs in folder '{folder_name}':")
-    #for i, url in enumerate(urls, 1):
-        #print(f"{i}. {url}")
+    if verbose:
+        print(f"\nURLs in folder '{folder_name}':")
+        for i, url in enumerate(urls, 1):
+            print(f"{i}. {url}")
     
     return urls
 
 
 
 def update_usage_stats_for_all(db):
-    query_folders = list_query_folders()
+    query_folders = list_query_folders(False)
     for query_folder in query_folders:
-        for url in list_folder_urls(query_folder):
+        for url in list_folder_urls(query_folder,False):
             rssfeed = get_feed_url_for_article(url)
             update_feed_stats(db, rssfeed)
 
@@ -996,12 +998,16 @@ Features:
         db = ActionDatabase(CACHE_DB)
         update_usage_stats_for_all(db)
         
-        print("\nNewsboat URL Processor")
-        print("=" * 50)
-        print(f"Queue: {db.count_queue()} URLs")
-        print(f"Actions: {db.count_actions()} processed URLs")
+        #print("\nNewsboat URL Processor")
+        #print("=" * 50)
+        #print(f"Queue: {db.count_queue()} URLs")
+        #print(f"Actions: {db.count_actions()} processed URLs")
         
         while True:
+            print("\nNewsboat URL Processor")
+            print("=" * 50)
+            print(f"Queue: {db.count_queue()} URLs")
+            print(f"Actions: {db.count_actions()} processed URLs")
             print_main_menu()
             
             selection = input("\nEnter selection: ").strip().lower()
