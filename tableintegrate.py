@@ -1,3 +1,4 @@
+
 #!/usr/bin/env python3
 """
 Newsboat URL Processor with AI Integration
@@ -230,6 +231,15 @@ class ActionDatabase:
         self.conn.commit()
         return cursor.rowcount
         
+    def clear_feed_stats(self):
+        """Clear all records from the feed_stats table."""
+        if not self.conn:
+            return 0
+        cursor = self.conn.cursor()
+        cursor.execute("DELETE FROM feed_stats")
+        self.conn.commit()
+        return cursor.rowcount
+        
     def count_queue(self):
         """Count records in the queue table."""
         if not self.conn:
@@ -245,6 +255,40 @@ class ActionDatabase:
         cursor = self.conn.cursor()
         cursor.execute("SELECT COUNT(*) FROM actions")
         return cursor.fetchone()[0]
+        
+    def count_feed_stats(self):
+        """Count records in the feed_stats table."""
+        if not self.conn:
+            return 0
+        cursor = self.conn.cursor()
+        cursor.execute("SELECT COUNT(*) FROM feed_stats")
+        return cursor.fetchone()[0]
+
+    def get_most_used_feeds(self, limit=10):
+        """
+        Get the most used RSS feeds from the feed_stats table.
+        
+        Args:
+            limit (int): Maximum number of results to return
+            
+        Returns:
+            list: List of tuples with (feed_url, usage_count)
+        """
+        if not self.conn:
+            return []
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT feed_url, COUNT(*) as usage_count 
+                FROM feed_stats 
+                GROUP BY feed_url 
+                ORDER BY usage_count DESC 
+                LIMIT ?
+            """, (limit,))
+            return cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"SQLite error in get_most_used_feeds: {e}")
+            return []
         
     def add_to_queue(self, url, folder_name):
         """
@@ -518,11 +562,10 @@ def parse_search_folders():
         print(f"[ERROR] Error reading or processing file: {e}")
         sys.exit(1)
     return search_folders
-##########  N  E  W  ##########################################
 
 def get_feed_url_for_article(article_url):
     """
-    Given an article URL, return the associated RSS feed URL from the Newsboat cache. gil
+    Given an article URL, return the associated RSS feed URL from the Newsboat cache.
 
     Args:
         article_url (str): The article's URL.
@@ -547,7 +590,6 @@ def get_feed_url_for_article(article_url):
     finally:
         conn.close()
     return feed_url
-
 
 def view_feed_stats(db):
     """
@@ -592,58 +634,6 @@ def view_feed_stats(db):
     except sqlite3.Error as e:
         print(f"SQLite error retrieving feed stats: {e}")
 
-
-
-#def update_feed_stats(db, article_url):
-#    """
-#    Update feed statistics for the RSS feed that generated the article URL.
-#    
-#    Args:
-#        db (ActionDatabase): Database instance
-#        article_url (str): URL of the article to track
-#        
-#    Returns:
-#        bool: True if successful, False otherwise
-#    """
-#    if not db or not db.conn:
-#        print("Database connection not available")
-#        return False
-#        
-#    # Get the RSS feed URL for this article
-#    feed_url = get_feed_url_for_article(article_url)
-#    if not feed_url:
-#        print(f"Could not determine RSS feed for article: {article_url}")
-#        return False
-#    
-#    cursor = db.conn.cursor()
-#    try:
-#        # Check if the feed already exists in stats
-#        cursor.execute("SELECT usage_count FROM feed_stats WHERE feed_url = ?", (feed_url,))
-#        result = cursor.fetchone()
-#        
-#        if result:
-#            # Update existing feed stats
-#            cursor.execute("""
-#                UPDATE feed_stats 
-#                SET usage_count = usage_count + 1, last_used = CURRENT_TIMESTAMP
-#                WHERE feed_url = ?
-#            """, (feed_url,))
-#        else:
-#            # Insert new feed stats
-#            cursor.execute("""
-#                INSERT INTO feed_stats (feed_url, usage_count, last_used)
-#                VALUES (?, 1, CURRENT_TIMESTAMP)
-#            """, (feed_url,))
-#        
-#        db.conn.commit()
-#        print(f"Updated stats for feed: {feed_url}")
-#        return True
-#        
-#    except sqlite3.Error as e:
-#        print(f"SQLite error updating feed stats: {e}")
-#        db.conn.rollback()
-#        return False
-
 def update_feed_stats(db, rss_url):
     """
     Insert a record with the RSS URL and current timestamp into the feed stats table.
@@ -680,7 +670,6 @@ def update_feed_stats(db, rss_url):
         db.conn.rollback()
         return False
 
-    
 def list_query_folders(verbose=True):
     """
     List all query folders from the Newsboat URLs file.
@@ -699,7 +688,6 @@ def list_query_folders(verbose=True):
             print(f"{i}. {folder['name']}")
     
     return [folder['name'] for folder in search_folders]
-
 
 def list_folder_urls(folder_name,verbose=True):
     """
@@ -733,8 +721,6 @@ def list_folder_urls(folder_name,verbose=True):
     
     return urls
 
-
-
 def update_usage_stats_for_all(db):
     query_folders = list_query_folders(False)
     for query_folder in query_folders:
@@ -742,7 +728,6 @@ def update_usage_stats_for_all(db):
             rssfeed = get_feed_url_for_article(url)
             update_feed_stats(db, rssfeed)
 
-####################################################
 def count_unread_articles(terms, logic):
     """
     Count unread articles for a search folder's terms and logic.
@@ -954,6 +939,8 @@ def print_main_menu():
     print("  [p] Process queue with AI")
     print("  [cq] Clear queue table")
     print("  [ca] Clear actions table")
+    print("  [cs] Clear feed stats")
+    print("  [most] Show most used feeds")
     print("  [l] List search folders")
     print("  [q] Quit")
 
@@ -998,16 +985,12 @@ Features:
         db = ActionDatabase(CACHE_DB)
         update_usage_stats_for_all(db)
         
-        #print("\nNewsboat URL Processor")
-        #print("=" * 50)
-        #print(f"Queue: {db.count_queue()} URLs")
-        #print(f"Actions: {db.count_actions()} processed URLs")
-        
         while True:
             print("\nNewsboat URL Processor")
             print("=" * 50)
-            print(f"Queue: {db.count_queue()} URLs")
-            print(f"Actions: {db.count_actions()} processed URLs")
+            print(f"{'Queue:':14s} {db.count_queue()} URLs")
+            print(f"{'Action:':14s} {db.count_actions()} processed URLs")
+            print(f"{'Feed_stats:':14s} {db.count_feed_stats()}" )
             print_main_menu()
             
             selection = input("\nEnter selection: ").strip().lower()
@@ -1024,6 +1007,26 @@ Features:
                 count = db.clear_actions()
                 print(f"\nCleared actions table (removed {count} records)")
                 print(f"Actions: {db.count_actions()} processed URLs")
+                
+            elif selection == 'cs':
+                count = db.clear_feed_stats()
+                print(f"\nCleared feed stats table (removed {count} records)")
+                
+            elif selection == 'most':
+                most_used = db.get_most_used_feeds(20)  # Show top 20
+                if not most_used:
+                    print("No feed statistics available")
+                    continue
+                    
+                print("\nMost Used RSS Feeds:")
+                print("-" * 80)
+                print(f"{'Rank':<5} {'Feed URL':<60} {'Uses':<6}")
+                print("-" * 80)
+                
+                for i, (feed_url, usage_count) in enumerate(most_used, 1):
+                    # Truncate long URLs for display
+                    display_url = feed_url[:57] + "..." if len(feed_url) > 60 else feed_url
+                    print(f"{i:<5} {display_url:<60} {usage_count:<6}")
                 
             elif selection == 'l':
                 print("\nAvailable Search Folders:")
@@ -1065,16 +1068,6 @@ Features:
         worker_pool.shutdown()
         if db:
             db.close()
-#        if was_running:
-#            # Start Newsboat in a way that doesn't block program exit
-#            try:
-#                subprocess.Popen(['newsboat'], 
-#                               start_new_session=True,
-#                               stdout=subprocess.DEVNULL,
-#                               stderr=subprocess.DEVNULL)
-#                print("Newsboat restarted successfully")
-#            except Exception as e:
-#                print(f"Warning: Could not restart Newsboat - {str(e)}")
 
 if __name__ == "__main__":
     main()
