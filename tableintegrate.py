@@ -935,6 +935,45 @@ def get_nonzero_folders():
             nonzero_folders.append({"name": folder["name"], "terms": folder["terms"], "logic": folder["logic"], "count": count})
     return sorted(nonzero_folders, key=lambda x: x["count"], reverse=True)
 
+#def add_folders_to_queue(folders, db):
+#    """
+#    Add URLs from selected folders to the queue table.
+#    
+#    Args:
+#        folders (list): List of folder dictionaries
+#        db (ActionDatabase): Database instance
+#    """
+#    if not db:
+#        print("Database connection not available")
+#        return
+#
+#    # Get user selections
+#    selections = input("\nEnter folder numbers to add to queue (comma separated, or 'q' to quit): ").strip()
+#    if selections.lower() == 'q':
+#        return
+#    
+#    try:
+#        selected_indices = [int(s.strip())-1 for s in selections.split(',')]
+#        selected_folders = [folders[i] for i in selected_indices if 0 <= i < len(folders)]
+#        
+#        if not selected_folders:
+#            print("No valid folders selected")
+#            return
+#
+#        # Gather ALL URLs from selected folders and add to queue
+#        total_added = 0
+#        for folder in selected_folders:
+#            urls = get_article_urls(folder['terms'], folder['logic'])
+#            if urls:
+#                for url in urls:
+#                    if db.add_to_queue(url, folder['name']):
+#                        total_added += 1
+#        
+#        print(f"\nAdded {total_added} URLs to queue from {len(selected_folders)} folders.")
+#        
+#    except ValueError:
+#        print("Invalid input - please enter numbers separated by commas")
+
 def add_folders_to_queue(folders, db):
     """
     Add URLs from selected folders to the queue table.
@@ -948,18 +987,39 @@ def add_folders_to_queue(folders, db):
         return
 
     # Get user selections
-    selections = input("\nEnter folder numbers to add to queue (comma separated, or 'q' to quit): ").strip()
+    selections = input("\nEnter folder numbers to add to queue (comma separated, ranges with '-', or 'q' to quit): ").strip()
     if selections.lower() == 'q':
         return
     
     try:
-        selected_indices = [int(s.strip())-1 for s in selections.split(',')]
-        selected_folders = [folders[i] for i in selected_indices if 0 <= i < len(folders)]
+        # Parse ranges and individual selections
+        selected_indices = []
+        for part in selections.split(','):
+            part = part.strip()
+            if '-' in part:
+                # Handle range (e.g., "1-6")
+                start, end = map(int, part.split('-'))
+                selected_indices.extend(range(start-1, end))
+            elif ':' in part:
+                # Handle range with colon (e.g., "1:6")
+                start, end = map(int, part.split(':'))
+                selected_indices.extend(range(start-1, end))
+            else:
+                # Handle individual number
+                selected_indices.append(int(part)-1)
         
-        if not selected_folders:
+        # Remove duplicates and sort
+        selected_indices = sorted(set(selected_indices))
+        
+        # Filter valid indices
+        selected_indices = [i for i in selected_indices if 0 <= i < len(folders)]
+        
+        if not selected_indices:
             print("No valid folders selected")
             return
 
+        selected_folders = [folders[i] for i in selected_indices]
+        
         # Gather ALL URLs from selected folders and add to queue
         total_added = 0
         for folder in selected_folders:
@@ -972,7 +1032,8 @@ def add_folders_to_queue(folders, db):
         print(f"\nAdded {total_added} URLs to queue from {len(selected_folders)} folders.")
         
     except ValueError:
-        print("Invalid input - please enter numbers separated by commas")
+        print("Invalid input - please enter numbers separated by commas, or ranges like 1-6")
+
 
 def process_queue(worker_pool, db):
     """
