@@ -1,4 +1,3 @@
-
 #!/usr/bin/env python3
 """
 Newsboat URL Processor with AI Integration
@@ -211,6 +210,14 @@ class ActionDatabase:
             used_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
         """)
+        
+        # Create defined_feeds table to store all feeds from urls file
+        cursor.execute("""
+        CREATE TABLE IF NOT EXISTS defined_feeds (
+            feed_url TEXT PRIMARY KEY,
+            added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+        """)
         self.conn.commit()
         
     def clear_queue(self):
@@ -289,6 +296,63 @@ class ActionDatabase:
         except sqlite3.Error as e:
             print(f"SQLite error in get_most_used_feeds: {e}")
             return []
+    
+    def get_least_used_feeds(self, limit=10):
+        """
+        Get the least used RSS feeds from the feed_stats table.
+        
+        Args:
+            limit (int): Maximum number of results to return
+            
+        Returns:
+            list: List of tuples with (feed_url, usage_count)
+        """
+        if not self.conn:
+            return []
+        cursor = self.conn.cursor()
+        try:
+            cursor.execute("""
+                SELECT df.feed_url, COUNT(fs.feed_url) as usage_count
+                FROM defined_feeds df
+                LEFT JOIN feed_stats fs ON df.feed_url = fs.feed_url
+                GROUP BY df.feed_url
+                ORDER BY usage_count ASC, df.feed_url
+                LIMIT ?
+            """, (limit,))
+            return cursor.fetchall()
+        except sqlite3.Error as e:
+            print(f"SQLite error in get_least_used_feeds: {e}")
+            return []
+    
+    def update_defined_feeds(self, feed_urls):
+        """
+        Update the defined_feeds table with current feed URLs.
+        
+        Args:
+            feed_urls (list): List of feed URLs
+            
+        Returns:
+            bool: True if successful, False otherwise
+        """
+        if not self.conn:
+            return False
+        cursor = self.conn.cursor()
+        try:
+            # Clear existing defined feeds
+            cursor.execute("DELETE FROM defined_feeds")
+            
+            # Insert current feeds
+            for url in feed_urls:
+                cursor.execute("""
+                INSERT OR IGNORE INTO defined_feeds (feed_url)
+                VALUES (?)
+                """, (url,))
+                
+            self.conn.commit()
+            return True
+        except sqlite3.Error as e:
+            print(f"SQLite error in update_defined_feeds: {e}")
+            return False
         
     def add_to_queue(self, url, folder_name):
         """
@@ -562,6 +626,46 @@ def parse_search_folders():
         print(f"[ERROR] Error reading or processing file: {e}")
         sys.exit(1)
     return search_folders
+
+def parse_feed_urls():
+    """
+    Parse feed URLs from ~/.newsboat/urls file.
+    
+    Returns:
+        list: List of feed URLs with trailing spaces and ! removed
+    """
+    if not os.path.exists(URLS_FILE):
+        print(f"[ERROR] URLs file does not exist at {URLS_FILE}")
+        sys.exit(1)
+    if not os.path.isfile(URLS_FILE):
+        print(f"[ERROR] Path {URLS_FILE} exists but is not a file")
+        sys.exit(1)
+    if not os.access(URLS_FILE, os.R_OK):
+        print(f"[ERROR] URLs file at {URLS_FILE} is not readable")
+        sys.exit(1)
+
+    feed_urls = []
+    try:
+        with open(URLS_FILE, 'r') as f:
+            lines = f.readlines()
+            if not lines:
+                print("[ERROR] URLs file is empty")
+                sys.exit(1)
+            for line in lines:
+                line = line.strip()
+                # Skip empty lines and query lines
+                if not line or line.startswith("query:") or line.startswith('"'):
+                    continue
+                
+                # Handle feed lines (remove trailing spaces and ! if present)
+                if line.startswith('http'):
+                    # Remove trailing spaces and ! if they exist
+                    clean_url = re.sub(r'\s*!\s*$', '', line)
+                    feed_urls.append(clean_url)
+    except Exception as e:
+        print(f"[ERROR] Error reading or processing file: {e}")
+        sys.exit(1)
+    return feed_urls
 
 def get_feed_url_for_article(article_url):
     """
@@ -941,6 +1045,7 @@ def print_main_menu():
     print("  [ca] Clear actions table")
     print("  [cs] Clear feed stats")
     print("  [most] Show most used feeds")
+    print("  [least] Show least used feeds")
     print("  [l] List search folders")
     print("  [q] Quit")
 
@@ -983,6 +1088,11 @@ Features:
             sys.exit(1)
             
         db = ActionDatabase(CACHE_DB)
+        
+        # Parse feed URLs and update the defined_feeds table
+        feed_urls = parse_feed_urls()
+        db.update_defined_feeds(feed_urls)
+        
         update_usage_stats_for_all(db)
         
         while True:
@@ -1024,6 +1134,22 @@ Features:
                 print("-" * 80)
                 
                 for i, (feed_url, usage_count) in enumerate(most_used, 1):
+                    # Truncate long URLs for display
+                    display_url = feed_url[:57] + "..." if len(feed_url) > 60 else feed_url
+                    print(f"{i:<5} {display_url:<60} {usage_count:<6}")
+            
+            elif selection == 'least':
+                least_used = db.get_least_used_feeds(1000)
+                if not least_used:
+                    print("No feed statistics available")
+                    continue
+                    
+                print("\nLeast Used RSS Feeds:")
+                print("-" * 80)
+                print(f"{'Rank':<5} {'Feed URL':<60} {'Uses':<6}")
+                print("-" * 80)
+                
+                for i, (feed_url, usage_count) in enumerate(least_used, 1):
                     # Truncate long URLs for display
                     display_url = feed_url[:57] + "..." if len(feed_url) > 60 else feed_url
                     print(f"{i:<5} {display_url:<60} {usage_count:<6}")

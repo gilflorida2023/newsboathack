@@ -159,6 +159,8 @@ CACHE_DIR="${HOME}/.cache/${SCRIPT_NAME}"
 mkdir -p "$CACHE_DIR"
 URL_HASH=$(echo -n "$URL" | md5sum | awk '{print $1}')
 CACHE_FILE="${CACHE_DIR}/${URL_HASH}.txt"
+# Add this line right after the CACHE_FILE is defined:
+echo "Cache file: $CACHE_FILE" >&2
 
 # Check dependencies
 for cmd in curl lynx jq stat; do
